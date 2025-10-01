@@ -98,15 +98,6 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
         );
 
-        // 로그아웃 설정
-        http.logout()
-                .logoutUrl("/logout")
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    if (!response.isCommitted()) {
-                        response.sendRedirect("/auth/login");
-                    }
-                })
-                .permitAll();
 
         //401, 403 에러 로깅 핸들러 추가
         http.exceptionHandling()

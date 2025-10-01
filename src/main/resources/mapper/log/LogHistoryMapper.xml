@@ -10,7 +10,6 @@
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
-        <!-- TIMESTAMP → LocalDateTime 매핑 -->
         <result property="loginTime" column="login_time" jdbcType="TIMESTAMP"/>
         <result property="logoutTime" column="logout_time" jdbcType="TIMESTAMP"/>
         <result property="ipAddress" column="ip_address"/>
@@ -22,7 +21,7 @@
             SELECT log_history_seq.NEXTVAL FROM dual
         </selectKey>
         INSERT INTO log_history (id, user_id, username, login_time, ip_address)
-        VALUES (#{id}, #{userId}, #{username}, #{loginTime, jdbcType=TIMESTAMP}, #{ipAddress})
+        VALUES (#{id}, #{userId}, #{username}, #{loginTime}, #{ipAddress})
     </insert>
 
     <!-- 로그아웃 시간 업데이트 -->
@@ -39,7 +38,12 @@
 
     <!-- 전체 로그 조회 -->
     <select id="findAllLogs" resultMap="logHistoryMap">
-        SELECT id, user_id, username, login_time, logout_time, ip_address
+        SELECT id,
+               user_id,
+               username,
+               login_time,
+               logout_time,
+               ip_address
         FROM log_history
         ORDER BY login_time ASC
     </select>
