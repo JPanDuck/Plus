@@ -6,7 +6,6 @@
   <ul class="menu-list">
 
     <!-- ✅ 공통 메뉴 -->
-    <li><a href="<c:url value='/index'/>">대시보드</a></li>
     <li><a href="<c:url value='/calendar'/>">학사일정</a></li>    <%--병래--%>
     <li><a href="<c:url value='/notification'/>">알림센터</a></li>
     <li><a href="<c:url value='/notice'/>">공지사항</a></li>

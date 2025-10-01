@@ -75,7 +75,8 @@ public class SecurityConfig {
                         "/js/**",
                         "/images/**",
                         "/img/**",
-                        "/favicon.ico"
+                        "/favicon.ico",
+                        "/favicon-*.png"
                 ).permitAll()
 
                 // 관리자 권한이 필요한 페이지
