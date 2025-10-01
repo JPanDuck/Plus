@@ -9,8 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * 접속 기록 관리
-*/
-
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,12 +21,16 @@ public class LogHistory {
     private LocalDateTime logoutTime;
     private String ipAddress;
 
-    //jsp 에서는 LocalDateTime 사용 불가로 String 으로 변환(JSTL 버전 문제)
-    public String getLoginTimeStr(){
-        return loginTime != null ? loginTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "";
+    // LocalDateTime → String 변환 (JSP 호환용)
+    public String getLoginTimeStr() {
+        return loginTime != null
+                ? loginTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : "-";
     }
 
-    public String getLogoutTimeStr(){
-        return logoutTime != null ? logoutTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : "";
+    public String getLogoutTimeStr() {
+        return logoutTime != null
+                ? logoutTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                : "-";
     }
 }
