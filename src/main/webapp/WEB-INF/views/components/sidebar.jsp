@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 
 <aside class="sidebar card-white">
   <div class="menu-cap">MENU</div>
@@ -8,7 +10,7 @@
     <!-- ✅ 공통 메뉴 -->
     <li><a href="<c:url value='/calendar'/>">학사일정</a></li>    <%--병래--%>
     <li><a href="<c:url value='/notification'/>">알림센터</a></li>
-    <li><a href="<c:url value='/notice'/>">공지사항</a></li>
+    <li><a href="<c:url value='/notices'/>">공지사항</a></li>
     <li><a href="<c:url value='/mypage'/>">마이페이지</a></li>
 
     <!-- ✅ 관리자 메뉴 -->
@@ -16,8 +18,7 @@
     <li><a href="<c:url value='/auth/reset-password'/>">비밀번호 초기화</a></li>
     <li><a href="<c:url value='/auth/log-history'/>">접속 기록 관리</a></li>
     <li><a href="<c:url value='/auth/log-monitor'/>">로그 모니터링</a></li>
-    <li><a href="<c:url value='/notice-manage'/>">공지사항 관리</a></li>
-    <li><a href="<c:url value='/user-manage'/>">사용자 관리</a></li>
+    <li><a href="<c:url value='/auth/user-list'/>">계정</a></li>
     <li><a href="<c:url value='/system-manage'/>">시스템 관리</a></li>
 </sec:authorize>
 

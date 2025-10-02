@@ -35,7 +35,6 @@
                         <tr>
                             <th scope="col">로그 ID</th>
                             <th scope="col">사용자 ID</th>
-                            <th scope="col">사용자명</th>
                             <th scope="col">IP 주소</th>
                             <th scope="col">로그인 시간</th>
                             <th scope="col">로그아웃 시간</th>
@@ -43,7 +42,7 @@
                         </thead>
                         <tbody id="tbody">
                         <tr>
-                            <td colspan="6">데이터 로딩중...</td>
+                            <td colspan="5">데이터 로딩중...</td>
                         </tr>
                         </tbody>
                     </table>
@@ -56,45 +55,68 @@
 <%@ include file="/WEB-INF/views/components/footer.jsp" %>
 
 <script>
-    async function loadHistory(){
+    function loadHistory(){
         const tableBody = document.getElementById('tbody');
-        try {
-            const res = await fetch('/api/admin/logs/history');
-            if(!res.ok){
-                throw new Error('네트워크 오류');
-            }
-            const logs = await res.json();
-            if(logs.length > 0){
-                let rows = '';
-                logs.forEach(log => {
-                    rows += `
-                        <tr>
-                            <td>${log.id}</td>
-                            <td>${log.userId}</td>
-                            <td>${log.username}</td>
-                            <td>${log.ipAddress}</td>
-                            <td>${log.loginTimeStr}</td>
-                            <td>${log.logoutTimeStr ? log.logoutTimeStr : '-'}</td>
-                        </tr>
-                    `;
-                });
-                tableBody.innerHTML = rows;
+        const token = localStorage.getItem('accessToken');
+        console.log("읽은 토큰:", token);
 
-                // 항상 마지막 행이 보이도록 스크롤 이동
-                const container = tableBody.parentElement;
-                container.scrollTop = container.scrollHeight;
-            }else {
-                tableBody.innerHTML = '<tr><td colspan="6">접속 기록이 없습니다.</td></tr>';
-            }
-        } catch (error) {
-            console.error(error);
-            tableBody.innerHTML = '<tr><td colspan="6">데이터 로딩 실패</td></tr>';
+        if(!token){
+            tableBody.innerHTML = '<tr><td colspan="5">인증 정보가 없습니다.</td></tr>';
+            return;
         }
+
+        fetch('/api/admin/logs/history', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error('네트워크 응답이 올바르지 않습니다.');
+                }
+                return response.json();
+            })
+            .then(logs => {
+                console.table(logs);    //데이터 확인용
+
+                if(logs.length > 0){
+                    let rows = '';
+
+                    try{
+                        logs.forEach(log => {
+                            const id = log.id;
+                            const username = log.username;
+                            const ipAddress = log.ipAddress;
+                            const loginTime = log.loginTimeStr || '-';
+                            const logoutTime = log.logoutTimeStr || '-';
+                            rows += '<tr>'
+                                + '<td>' + id + '</td>'
+                                + '<td>' + username + '</td>'
+                                + '<td>' + ipAddress + '</td>'
+                                + '<td>' + loginTime + '</td>'
+                                + '<td>' + logoutTime + '</td>'
+                                + '</tr>';
+                        });
+                        tableBody.innerHTML = rows;
+                    }catch (e) {
+                        //에러가 발생하더라도 로그는 찍히도록
+                        console.error('데이터 바인딩중 에러 발생: ', e.message);
+                        tableBody.innerHTML = '<tr><td colspan="5>데이터 출력중 오류 발생, 콘솔 확인"</td></tr>';
+                    }
+                }else {
+                    tableBody.innerHTML = '<tr><td colspan="5">접속 기록이 없습니다.</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('데이터를 가져오는 중 오류가 발생: ', error);
+                tableBody.innerHTML = '<tr><td colspan="5">데이터 로딩에 실패했습니다.</td></tr>';
+            });
     }
 
     document.addEventListener('DOMContentLoaded', function (){
-        loadHistory();
-        setInterval(loadHistory, 5000); //5초마다 자동 새로고침
+        loadHistory();      //페이지 로드 시 바로 실행
+        // setInterval(loadHistory, 5000); //5초마다 자동 새로고침
     });
 </script>
 </body>

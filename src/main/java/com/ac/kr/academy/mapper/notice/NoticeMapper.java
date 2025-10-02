@@ -2,7 +2,7 @@ package com.ac.kr.academy.mapper.notice;
 
 import com.ac.kr.academy.domain.notice.Notice;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
 
 import java.util.List;
 

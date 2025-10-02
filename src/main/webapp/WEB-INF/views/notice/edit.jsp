@@ -1,83 +1,125 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-    <title>공지사항 수정</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>학사정보관리시스템 - 공지 수정</title>
+
+    <!-- ✅ 공통 CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" href="<c:url value='/css/style.css'/>"/>
+    <!-- ✅ 파비콘 -->
+    <link rel="icon" type="image/x-icon" href="<c:url value='/favicon.ico'/>"/>
 </head>
-<body>
-<!--폼 submit 방식일 경우 : fetch 삭제 / action="/notices/edit" method="post" 로 변경-->
-<form id="editForm">
-    <input type="hidden" id="id" name="id" value="${notice.id}">
+<body class="bg-page page-notice">
 
-    <label for="title">제목: </label><br>
-    <input type="text" id="title" name="title" value="${notice.title}">
-    <br><br>
+<!-- ✅ header -->
+<jsp:include page="/WEB-INF/views/components/header.jsp"/>
 
-    <label for="content">내용: </label><br>
-    <textarea id="content" name="content" rows="10" cols="50">${notice.content}</textarea>
-    <br><br>
+<main class="py-4">
+    <div class="container-1200 d-flex gap-24">
 
-    <label for="isUrgent">중요: </label>
-    <input type="hidden" name="isUrgent" value="0">
-    <input type="checkbox" id="isUrgent" name="isUrgent" value="1" <c:if test="${notice.isUrgent == 1}">checked</c:if>>
-    <br><br>
+        <!-- ✅ sidebar -->
+        <jsp:include page="/WEB-INF/views/components/sidebar.jsp"/>
 
-    <label for="deadline">미리알림: </label><br>
-    <input type="date" id="deadline" name="deadline" value="${notice.deadlineStr}">
-    <br><br>
+        <!-- ✅ 본문 -->
+        <section class="flex-1">
+            <div class="card-white p-20">
+                <div class="fw-700 fs-5 mb-3">✏️ 공지 수정</div>
 
-    <label for="startDate">시작일: </label><br>
-    <input type="date" id="startDate" name="startDate" value="${notice.startDateStr}">
-    <br><br>
+                <form id="editForm" action="<c:url value='/notices/edit'/>" method="post">
+                    <input type="hidden" name="id" value="${notice.id}"/>
 
-    <label for="endDate">종료일: </label><br>
-    <input type="date" id="endDate" name="endDate" value="${notice.endDateStr}">
-    <br><br>
+                    <!-- 제목 -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="title" name="title" value="${notice.title}" required/>
+                    </div>
 
-    <button type="submit">수정 완료</button>
-    <button type="button" onclick="history.back()">취소</button>
-</form>
+                    <!-- 내용 -->
+                    <div class="mb-3">
+                        <label for="content" class="form-label">내용</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required>${notice.content}</textarea>
+                    </div>
 
+                    <!-- 날짜 -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="startDate" class="form-label">시작일</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="${notice.startDateStr}" required/>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="endDate" class="form-label">종료일</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="${notice.endDateStr}" required/>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="deadline" class="form-label">마감일</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" value="${notice.deadlineStr}" required/>
+                        </div>
+                    </div>
+
+                    <!-- 긴급 여부 -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isUrgent" name="isUrgent" value="1"
+                               <c:if test="${notice.isUrgent == 1}">checked</c:if>/>
+                        <label class="form-check-label" for="isUrgent">긴급 여부</label>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-pencil-square"></i> 수정
+                        </button>
+                        <a href="<c:url value='/notices/detail/${notice.id}'/>" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> 취소
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- ✅ footer -->
+<jsp:include page="/WEB-INF/views/components/footer.jsp"/>
+
+<!-- ✅ JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.getElementById('editForm').addEventListener('submit', function (event){
-        event.preventDefault();
+    // 📌 add.jsp와 동일한 검증 로직 적용
+    document.getElementById("editForm").addEventListener("submit", function(e) {
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("content").value.trim();
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const deadline = document.getElementById("deadline").value;
 
-        const noticeId = document.getElementById('id').value;
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
-        const isUrgent = document.getElementById('isUrgent').checked ? 1 : 0;
-        const deadline = document.getElementById('deadline').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
+        if (!title || !content || !startDate || !endDate || !deadline) {
+            e.preventDefault();
+            alert("제목, 내용, 시작일, 종료일, 마감일을 모두 입력해주세요.");
+            return false;
+        }
 
-        const data = {
-            id: noticeId,
-            title: title,
-            content: content,
-            isUrgent: isUrgent,
-            deadline: deadline,
-            startDate: startDate,
-            endDate: endDate
-        };
+        const sDate = new Date(startDate);
+        const eDate = new Date(endDate);
+        const dDate = new Date(deadline);
 
-        fetch(`/api/notices/${noticeId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if(response.ok){
-                alert('공지사항 수정이 완료되었습니다.');
-                window.location.href = `/notices/detail/${noticeId}`;
-            }else {
-                alert('수정 실패했습니다.');
-            }
-        })
-        .catch(error => {
-            console.log('네트워크 오류: ', error);
-        });
+        if (sDate > eDate) {
+            e.preventDefault();
+            alert("종료일은 시작일보다 빠를 수 없습니다.");
+            return false;
+        }
+
+        if (dDate < sDate || dDate > eDate) {
+            e.preventDefault();
+            alert("마감일은 시작일과 종료일 사이여야 합니다.");
+            return false;
+        }
     });
 </script>
 

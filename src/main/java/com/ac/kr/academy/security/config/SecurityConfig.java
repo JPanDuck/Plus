@@ -83,7 +83,8 @@ public class SecurityConfig {
                 .antMatchers(
                         "/admin/**",
                         "/api/admin/**",
-                        "/auth/log-monitor"
+                        "/auth/log-monitor",
+                        "/auth/log-history"
                 ).hasRole("ADMIN")
 
                 // (추가) 교수/지도교수 권한 나중에 구분 가능

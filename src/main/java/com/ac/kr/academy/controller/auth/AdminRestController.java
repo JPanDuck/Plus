@@ -79,6 +79,15 @@ public class AdminRestController {
         return ResponseEntity.ok(userList);
     }
 
+    // 사용자 단일 조회 (상세보기)
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserById(@PathVariable Long userId) {
+        User user = userService.findById(userId);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("사용자를 찾을 수 없습니다.");
+        }
+        return ResponseEntity.ok(user);
+    }
     //사용자 정보 수정
     @PutMapping("/update-user/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Long userId,

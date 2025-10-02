@@ -20,8 +20,8 @@
         <selectKey keyProperty="id" order="BEFORE" resultType="long">
             SELECT log_history_seq.NEXTVAL FROM dual
         </selectKey>
-        INSERT INTO log_history (id, user_id, username, login_time, ip_address)
-        VALUES (#{id}, #{userId}, #{username}, #{loginTime}, #{ipAddress})
+        INSERT INTO log_history (id, user_id, username, ip_address)
+        VALUES (#{id}, #{userId}, #{username}, #{ipAddress})
     </insert>
 
     <!-- 로그아웃 시간 업데이트 -->

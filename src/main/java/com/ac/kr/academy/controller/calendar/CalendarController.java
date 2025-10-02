@@ -1,6 +1,5 @@
 package com.ac.kr.academy.controller.calendar;
 
-
 import com.ac.kr.academy.domain.calendar.Calendar;
 import com.ac.kr.academy.service.calendar.CalendarService;
 import lombok.RequiredArgsConstructor;
@@ -20,44 +19,60 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
-    @GetMapping({"","/list"})
-    public String calendar(Model model) {
+    /** ✅ 일정 목록 */
+    @GetMapping({"", "/", "/list"})
+    public String list(Model model) {
         List<Calendar> calendars = calendarService.findAll();
         model.addAttribute("calendars", calendars);
         return "calendar/list";
     }
 
+    /** ✅ 일정 등록 폼 */
     @GetMapping("/add")
-    public String addForm() {
+    public String addForm(Model model) {
+        model.addAttribute("calendar", new Calendar());
         return "calendar/add";
     }
 
-    @PostMapping("/save")
-    public String saveCalendar(@ModelAttribute Calendar calendar, RedirectAttributes redirectAttributes) {
-        log.info("Request body: {}", calendar);
+    /** ✅ 일정 등록 처리 */
+    @PostMapping("/add")
+    public String add(@ModelAttribute Calendar calendar,
+                      RedirectAttributes ra) {
+        log.info("📌 일정 등록 요청: {}", calendar);
         calendarService.saveCalendar(calendar);
-        redirectAttributes.addFlashAttribute("message", "일정이 성공적으로 저장되었습니다.");
+        ra.addFlashAttribute("message", "일정이 성공적으로 등록되었습니다.");
         return "redirect:/calendar";
     }
 
+    /** ✅ 일정 수정 폼 */
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
         Calendar calendar = calendarService.findById(id);
+        if (calendar == null) {
+            return "redirect:/calendar";
+        }
         model.addAttribute("calendar", calendar);
         return "calendar/edit";
     }
 
-    @PostMapping("/update/{id}")
-    public String updateCalendar(@ModelAttribute Calendar calendar, RedirectAttributes redirectAttributes) {
-        log.info("Update request for calendar: {}", calendar);
+    /** ✅ 일정 수정 처리 */
+    @PostMapping("/edit/{id}")
+    public String edit(@PathVariable Long id,
+                       @ModelAttribute Calendar calendar,
+                       RedirectAttributes ra) {
+        log.info("📌 일정 수정 요청: {}", calendar);
+        calendar.setId(id); // 안전하게 id 세팅
         calendarService.saveCalendar(calendar);
-        redirectAttributes.addFlashAttribute("message", "일정이 성공적으로 수정되었습니다.");
-        return "redirect:/calendar/list";
+        ra.addFlashAttribute("message", "일정이 성공적으로 수정되었습니다.");
+        return "redirect:/calendar";
     }
 
+    /** ✅ 일정 삭제 */
     @PostMapping("/delete/{id}")
-    public String deleteCalendar(@PathVariable Long id) {
+    public String delete(@PathVariable Long id,
+                         RedirectAttributes ra) {
         calendarService.delete(id);
-        return "redirect:/calendar/list";
+        ra.addFlashAttribute("message", "일정이 삭제되었습니다.");
+        return "redirect:/calendar";
     }
 }

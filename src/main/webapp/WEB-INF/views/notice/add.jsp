@@ -1,42 +1,126 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-    <title>공지사항 생성</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>학사정보관리시스템 - 공지 등록</title>
+
+    <!-- ✅ 공통 CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" href="<c:url value='/css/style.css'/>"/>
+    <!-- ✅ 파비콘 -->
+    <link rel="icon" type="image/x-icon" href="<c:url value='/favicon.ico'/>"/>
 </head>
-<body>
-<form id="addForm" action="/notices/add" method="post">
-    <label for="title">제목: </label><br>
-    <input type="text" id="title" name="title" required><br><br>
+<body class="bg-page page-notice">
 
-    <label for="content">내용: </label><br>
-    <textarea id="content" name="content" rows="10" cols="50" required></textarea><br><br>
+<!-- ✅ header -->
+<jsp:include page="/WEB-INF/views/components/header.jsp"/>
 
-    <label for="isUrgent">중요: </label>
-    <input type="hidden" name="isUrgent" value="0">
-    <input type="checkbox" id="isUrgent" name="isUrgent" value="1"><br><br>
+<main class="py-4">
+    <div class="container-1200 d-flex gap-24">
 
-    <label for="deadline">미리알림: </label><br>
-    <input type="date" id="deadline" name="deadline"><br><br>
+        <!-- ✅ sidebar -->
+        <jsp:include page="/WEB-INF/views/components/sidebar.jsp"/>
 
-    <label for="startDate">시작일: </label><br>
-    <input type="date" id="startDate" name="startDate" required><br><br>
+        <!-- ✅ 본문 -->
+        <section class="flex-1">
+            <div class="card-white p-20">
+                <div class="fw-700 fs-5 mb-3">📝 새 공지 등록</div>
 
-    <label for="endDate">종료일: </label><br>
-    <input type="date" id="endDate" name="endDate" required><br><br>
+                <form id="noticeForm" action="<c:url value='/notices/add'/>" method="post">
+                    <!-- 제목 -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="title" name="title" value="${notice.title}" required/>
+                    </div>
 
-    <button type="submit">작성</button>
-</form>
+                    <!-- 내용 -->
+                    <div class="mb-3">
+                        <label for="content" class="form-label">내용</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required>${notice.content}</textarea>
+                    </div>
 
+                    <!-- 날짜 -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="startDate" class="form-label">시작일</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="${notice.startDateStr}" required/>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="endDate" class="form-label">종료일</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="${notice.endDateStr}" required/>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="deadline" class="form-label">마감일</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" value="${notice.deadlineStr}" required/>
+                        </div>
+                    </div>
+
+                    <!-- 긴급 여부 -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isUrgent" name="isUrgent" value="1"
+                               <c:if test="${notice.isUrgent == 1}">checked</c:if>/>
+                        <label class="form-check-label" for="isUrgent">긴급 여부</label>
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> 등록
+                        </button>
+                        <a href="<c:url value='/notices'/>" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> 취소
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- ✅ footer -->
+<jsp:include page="/WEB-INF/views/components/footer.jsp"/>
+
+<!-- ✅ JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    document.getElementById('addForm').addEventListener('submit', function (event){
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
+    document.getElementById("noticeForm").addEventListener("submit", function(e) {
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("content").value.trim();
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const deadline = document.getElementById("deadline").value;
 
-        if(startDate !== "" && endDate !== "" && startDate > endDate){
-            alert('종료일은 시작일 이후로 설정 부탁드립니다.');
-            event.preventDefault(); //폼 제출 막기
+        // 1️⃣ 필수값 체크
+        if (!title || !content || !startDate || !endDate || !deadline) {
+            e.preventDefault();
+            alert("제목, 내용, 시작일, 종료일, 마감일을 모두 입력해주세요.");
+            return false;
         }
-    })
+
+        // 2️⃣ 날짜 논리 체크
+        const sDate = new Date(startDate);
+        const eDate = new Date(endDate);
+        const dDate = new Date(deadline);
+
+        if (sDate > eDate) {
+            e.preventDefault();
+            alert("종료일은 시작일보다 빠를 수 없습니다.");
+            return false;
+        }
+
+        if (dDate < sDate || dDate > eDate) {
+            e.preventDefault();
+            alert("마감일은 시작일과 종료일 사이여야 합니다.");
+            return false;
+        }
+    });
 </script>
+
 </body>
 </html>
