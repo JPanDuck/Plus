@@ -1,4 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <footer class="app-footer">
     <div class="container-1200 d-flex justify-content-between align-items-center">
         <p class="xsmall text-gray-500 mb-0">© 2025 Goott Academy. All rights reserved.</p>

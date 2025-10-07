@@ -21,13 +21,16 @@
             SELECT notification_seq.NEXTVAL FROM dual
         </selectKey>
         INSERT INTO notification (
-            noti_id, noti_type, target_id, created_at, title, is_resolved,
-            grade_id, notice_id, related_id
+        noti_id, noti_type, target_id, created_at, title, is_resolved,
+        grade_id, notice_id, related_id
         ) VALUES (
-                  #{notiId}, #{notiType}, #{targetId}, SYSDATE, #{title}, 0,
-                  #{gradeId}, #{noticeId}, #{relatedId}
+        #{notiId}, #{notiType}, #{targetId}, SYSDATE, #{title}, 0,
+        #{gradeId, jdbcType=NUMERIC},
+        #{noticeId, jdbcType=NUMERIC},
+        #{relatedId, jdbcType=NUMERIC}
         )
     </insert>
+
 
     <select id="getNotificationsByUserId" resultMap="notificationMap">
         SELECT * FROM notification
